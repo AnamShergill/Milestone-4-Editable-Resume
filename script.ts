@@ -1,5 +1,3 @@
-// // lisiting our elements here
-// List of element IDs to check
 const ids = ['name', 'email', 'phone', 'cnic', 'address', 'nationality', 'education', 'experience', 'skills'];
 const elements = ids.map(id => document.getElementById(id));
 
@@ -16,9 +14,11 @@ if (!form || !resumeDisplayElement) {
     console.error('Form or resume display element is missing.');
 } else {
     form.addEventListener('submit', (event: Event) => {
-        event.preventDefault(); // To prevent page from reload
+        event.preventDefault(); // Prevent page reload
 
         // Getting input values    
+        const fileInput = document.getElementById('profilePicture') as HTMLInputElement | null;
+        let profilePictureURL: string = '';
         const name = (document.getElementById('name') as HTMLInputElement)?.value || '';
         const email = (document.getElementById('email') as HTMLInputElement)?.value || '';
         const phone = (document.getElementById('phone') as HTMLInputElement)?.value || '';
@@ -29,9 +29,30 @@ if (!form || !resumeDisplayElement) {
         const experience = (document.getElementById('experience') as HTMLInputElement)?.value || '';
         const skills = (document.getElementById('skill') as HTMLInputElement)?.value || '';
 
+        // Handle profile picture
+        if (fileInput && fileInput.files && fileInput.files.length > 0) {
+            const profilePictureFile = fileInput.files[0]; // Get the first selected file
+            // Create a URL for the selected file
+            profilePictureURL = URL.createObjectURL(profilePictureFile);
+            console.log('Profile picture URL:', profilePictureURL); // Debug: Log the generated URL
+        } else {
+            profilePictureURL = ''; // No file selected
+            console.log('No profile picture selected.'); // Debug: Log if no picture is selected
+        }
+
+        // Generate the image HTML if the profile picture exists
+        const imageHTML = profilePictureURL 
+            ? `<img src="${profilePictureURL}" alt="Profile Picture" class="profilePicture" style="max-width: 150px; height: auto;">`
+            : ''; // Empty string if no image is selected
+
+        // Debug: Log the image HTML
+        console.log('Generated image HTML:', imageHTML);
+
         // Create resume output
         const resumeHTML = `
-            <h2>Editable Resume</h2>
+            <h2>RESUME</h2>
+            <br>
+            ${imageHTML}  <!-- Insert the profile picture here -->
             <h3>Personal Information</h3> 
             <p><strong>Name:</strong><span contenteditable="true"> ${name} </span></p>
             <p><strong>Email:</strong><span contenteditable="true"> ${email} </span></p>
@@ -49,6 +70,9 @@ if (!form || !resumeDisplayElement) {
             <h3>Skills:</h3>
             <p contenteditable="true" >${skills}</p>
         `;
+
+        // Debug: Log the full resume HTML
+        console.log('Generated resume HTML:', resumeHTML);
 
         // Generating Resume
         resumeDisplayElement.innerHTML = resumeHTML;
